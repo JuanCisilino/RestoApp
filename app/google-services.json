@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "352494981664",
+    "project_id": "resto-app-137b7",
+    "storage_bucket": "resto-app-137b7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352494981664:android:905182380c0f52a997a245",
+        "android_client_info": {
+          "package_name": "com.starlabs.restoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfVTzI1rHDprQCqrDbDa0hnGRD9idK1QU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
