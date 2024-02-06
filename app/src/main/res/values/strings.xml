@@ -3,4 +3,10 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="cargando">Cargando..</string>
+    <string name="error">Error</string>
+    <string name="ok">Aceptar</string>
+    <string name="error_message">Se ha producido un error autenticando al usuario</string>
+    <string name="welcome">"Bienvenido a\nResto Pizza"</string>
+    <string name="google">"Google"</string>
 </resources>

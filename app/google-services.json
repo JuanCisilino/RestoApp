@@ -12,7 +12,20 @@
           "package_name": "com.starlabs.restoapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "352494981664-b6308tkj0h0jivh9a25dnv151u6hn8d1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.starlabs.restoapp",
+            "certificate_hash": "325b647310dc988f878836d2f61a1ad31bf436b9"
+          }
+        },
+        {
+          "client_id": "352494981664-qhmp6tvk5nf82mnfup3oghsjhhlc5rpd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDfVTzI1rHDprQCqrDbDa0hnGRD9idK1QU"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "352494981664-qhmp6tvk5nf82mnfup3oghsjhhlc5rpd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
