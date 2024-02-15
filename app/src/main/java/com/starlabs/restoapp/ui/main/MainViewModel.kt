@@ -11,6 +11,13 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(val loginUC: LoginUC): ViewModel()  {
 
 
+    lateinit var prefs: Prefs
+
+    fun setPrefs(context: Context){
+        prefs = Prefs(context)
+    }
+
+    fun getRol() = prefs.getString("rol")
     fun signOut(context: Context) {
         Prefs(context).clear()
         loginUC.signOut()

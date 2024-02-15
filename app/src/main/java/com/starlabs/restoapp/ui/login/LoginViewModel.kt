@@ -32,7 +32,15 @@ class LoginViewModel @Inject constructor(private val loginUC: LoginUC): ViewMode
         prefs = Prefs(context)
     }
 
-    fun isOpenSession() = !prefs.getString("email").isNullOrEmpty()
+    fun isOpenSession(): Boolean {
+        val email = prefs.getString("email")
+        return if (!email.isNullOrEmpty()){
+            getUser(email)
+            true
+        } else {
+            false
+        }
+    }
 
     private fun createUser(user: User){
         uiScope.launch {
@@ -41,6 +49,7 @@ class LoginViewModel @Inject constructor(private val loginUC: LoginUC): ViewMode
                 val user = loginUC.createUser(user)
                 user?.let {
                     prefs.save("email", it.email?:"")
+                    prefs.save("rol", it.rol?:"user")
 
                     loadStateLiveData.postValue(LoadState.Success)
                     userLiveData.postValue(it)
@@ -69,7 +78,9 @@ class LoginViewModel @Inject constructor(private val loginUC: LoginUC): ViewMode
                         if (it.isSuccessful){
                             val user = User().convert(it.result.user!!)
                             currentUser = user
-                            currentUser?.let { createUser(it) }
+                            if (user.email.isNullOrEmpty()){
+                                createUser(user)
+                            }
                             userLiveData.postValue(user)
                         }else {
                             userLiveData.postValue(null)
@@ -90,19 +101,12 @@ class LoginViewModel @Inject constructor(private val loginUC: LoginUC): ViewMode
             try {
                 val user = loginUC.getUser(email)
                 user?.let {
+                    prefs.save("rol", it.rol?:"user")
                     loadStateLiveData.postValue(LoadState.Success)
-                    userLiveData.postValue(it)
                 }
-                    ?:run {
-                        val errorUser = User()
-                        errorUser.error = ErrorResponse(true, "roto")
-
-                        loadStateLiveData.postValue(LoadState.Error)
-                        userLiveData.postValue(errorUser)
-                    }
+                    ?:run { loadStateLiveData.postValue(LoadState.Error) }
             } catch (e: Exception) {
                 loadStateLiveData.postValue(LoadState.Error)
-                userLiveData.postValue(null)
             }
         }
     }

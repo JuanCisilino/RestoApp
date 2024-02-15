@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">RestoApp</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_profile">Profile</string>
+    <string name="title_admin">Admin</string>
     <string name="cargando">Cargando..</string>
     <string name="error">Error</string>
     <string name="ok">Aceptar</string>

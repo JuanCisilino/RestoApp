@@ -55,6 +55,8 @@ dependencies {
 
     //Hilt
     implementation 'com.google.dagger:hilt-android:2.44'
+    implementation 'com.google.firebase:firebase-database:20.3.0'
+    implementation 'com.google.firebase:firebase-storage:20.3.0'
     kapt 'com.google.dagger:hilt-compiler:2.44'
 
     //Firebase
