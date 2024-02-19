@@ -60,10 +60,10 @@ class LoginViewModelTest {
         coEvery { useCase.getCurrentUser() } returns null
 
         //When
-        viewModel.getCurrentUser()
+        val currentUser = viewModel.getCurrentUser()
 
         //Then
-        assert(viewModel.currentUser == null)
+        assert(currentUser == null)
     }
 
     @Test

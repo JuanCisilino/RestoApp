@@ -13,41 +13,48 @@ class UserRepository@Inject constructor(
     private val firebaseAuthInstance: FirebaseAuth
 ) {
 
-    var currentUser: User? = null
+    private var currentUser: User? = null
 
     fun signInWithCredentials(credential: AuthCredential) =
         firebaseAuthInstance.signInWithCredential(credential)
 
     fun signOut() = firebaseAuthInstance.signOut()
+
+    fun setCurrentUser(user: User) {
+        currentUser = user
+    }
+
+    fun getCurrentUser() = currentUser
     fun setFirebaseUser(firebaseUser: FirebaseUser) {
         currentUser = User().convert(firebaseUser)
     }
     suspend fun createUser(user: User): User? {
+        getUser(user.email!!)
 
-        val existingUser = user.email?.let { getUser(it) }
+        currentUser?.rol
+            ?.let { currentUser = User().updateUser(user) }
+            ?:run {
+                val newUser =
+                    hashMapOf(
+                        "name" to user.name,
+                        "email" to user.email,
+                        "photo" to user.photo,
+                        "rol" to "user",
+                        "active" to user.active,
+                        "qr" to user.qr,
+                        "onPlace" to user.onPlace
+                    )
 
-        if (existingUser?.userId.isNullOrEmpty()) {
-            val newUser =
-                hashMapOf(
-                    "name" to user.name,
-                    "email" to user.email,
-                    "photo" to user.photo,
-                    "rol" to user.rol,
-                    "active" to user.active,
-                    "qr" to user.qr,
-                    "onPlace" to user.onPlace
-                )
+                db.document(user.email!!).set(newUser)
+                user.rol = "user"
+                currentUser = user
+            }
 
-            val documentReference = db.add(newUser).await()
-            user.userId = documentReference.id
-        }
-
-        currentUser = User().updateUser(user)
         return currentUser
     }
 
     suspend fun updateUser(user: User): User {
-        val userDocumentRef = db.document(user.userId?:"")
+        val userDocumentRef = db.document(user.email?:"")
 
         val updatedUserData = User().createUserMap(user)
 
@@ -74,7 +81,7 @@ class UserRepository@Inject constructor(
 
             userData
                 ?.let {
-                    currentUser = User().createUser(it)
+                    currentUser = User().mapUser(it)
                     currentUser
                 }
                 ?:run { null }
@@ -82,4 +89,6 @@ class UserRepository@Inject constructor(
             null
         }
     }
+
+    fun newGetUser(email: String) = db.document(email).get()
 }

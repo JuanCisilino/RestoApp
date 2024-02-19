@@ -1,13 +1,19 @@
 package com.starlabs.restoapp.ui.home
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.starlabs.restoapp.helpers.Prefs
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 class HomeViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    lateinit var prefs: Prefs
+
+    fun setPrefs(context: Context){
+        prefs = Prefs(context)
     }
-    val text: LiveData<String> = _text
+
+    fun getRol() = prefs.getString("rol")
 }

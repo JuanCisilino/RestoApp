@@ -16,15 +16,20 @@ class LoginUC@Inject constructor(private val userRepository: UserRepository) {
         userRepository.getUser(email)
     }
 
+    suspend fun newGetUser(email: String) = withContext(dispatcher) {
+        userRepository.newGetUser(email)
+    }
+
     suspend fun createUser(user: User) = withContext(dispatcher) {
         userRepository.createUser(user)
     }
 
+    fun setCurrentUser(user: User) = userRepository.setCurrentUser(user)
     fun setFirebaseUser(firebaseUser: FirebaseUser) {
         userRepository.setFirebaseUser(firebaseUser)
     }
 
-    fun getCurrentUser() = userRepository.currentUser
+    fun getCurrentUser() = userRepository.getCurrentUser()
 
     fun signInWithCredentials(credential: AuthCredential) =
         userRepository.signInWithCredentials(credential)

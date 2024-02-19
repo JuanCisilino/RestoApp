@@ -5,12 +5,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import com.firebase.ui.auth.data.model.User.getUser
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
-import com.starlabs.restoapp.R
 import com.starlabs.restoapp.databinding.ActivityLoginBinding
 import com.starlabs.restoapp.helpers.LoadState
 import com.starlabs.restoapp.helpers.LoadingDialog
@@ -25,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
     private val viewModel by viewModels<LoginViewModel>()
     private lateinit var binding: ActivityLoginBinding
     private var loadingDialog = LoadingDialog()
+    private var isOpen = false
 
     companion object {
         const val GOOGLE_SIGN_IN = 100
@@ -55,14 +54,16 @@ class LoginActivity : AppCompatActivity() {
     private fun handleLoadingState(state: LoadState) {
         when (state) {
             LoadState.Loading -> { loadingDialog.show(supportFragmentManager) }
-            LoadState.Success -> { loadingDialog.dismiss() }
+            LoadState.Success -> {
+                if (isOpen) MainActivity.start(this)
+                isOpen = false
+                loadingDialog.dismiss() }
             else -> { loadingDialog.dismiss() }
         }
     }
     private fun checkSession() {
-        if (viewModel.isOpenSession()) {
-            MainActivity.start(this)
-        }
+        viewModel.isOpenSession()
+        isOpen = true
     }
 
     private fun setGoogleWidget() {

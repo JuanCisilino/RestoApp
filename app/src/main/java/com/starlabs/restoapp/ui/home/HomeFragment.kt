@@ -4,39 +4,50 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.starlabs.restoapp.databinding.FragmentHomeBinding
+import com.starlabs.restoapp.ui.menu.MenuActivity
 
 class HomeFragment : Fragment() {
 
-    private var _binding: FragmentHomeBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+    private val viewModel by viewModels<HomeViewModel>()
+    private lateinit var binding: FragmentHomeBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.setPrefs(requireContext())
+        setVisibiliby()
+        setButtons()
+    }
 
-        val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+    private fun setButtons() {
+        binding.reservationButton.setOnClickListener {  }
+        binding.menuButton.setOnClickListener { MenuActivity.start(requireActivity()) }
+
+        binding.qrButton.setOnClickListener {  }
+    }
+
+    private fun setVisibiliby() {
+        when (viewModel.getRol()) {
+            "admin" -> {
+                binding.adminLayout.visibility = View.VISIBLE
+                binding.userLayout.visibility = View.GONE
+            }
+            else -> {
+                binding.adminLayout.visibility = View.GONE
+                binding.userLayout.visibility = View.VISIBLE
+            }
         }
-        return root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 }

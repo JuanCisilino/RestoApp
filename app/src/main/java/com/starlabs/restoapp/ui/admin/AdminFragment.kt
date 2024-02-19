@@ -4,39 +4,34 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.starlabs.restoapp.databinding.FragmentAdminBinding
+import com.starlabs.restoapp.ui.abm.ABMActivity
+import com.starlabs.restoapp.ui.menu.MenuActivity
+import dagger.hilt.android.AndroidEntryPoint
 
 class AdminFragment : Fragment() {
 
-    private var _binding: FragmentAdminBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+    private val viewModel by viewModels<AdminViewModel>()
+    private lateinit var binding: FragmentAdminBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val notificationsViewModel =
-            ViewModelProvider(this).get(AdminViewModel::class.java)
-
-        _binding = FragmentAdminBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-        return root
+        binding = FragmentAdminBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setComponents()
+    }
+
+    private fun setComponents() {
+        binding.editMenuButton.setOnClickListener { MenuActivity.start(requireActivity()) }
+        binding.createButton.setOnClickListener { ABMActivity.start(requireActivity()) }
     }
 }

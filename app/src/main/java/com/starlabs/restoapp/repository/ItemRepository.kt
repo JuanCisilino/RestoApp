@@ -44,7 +44,7 @@ class ItemRepository@Inject constructor(
                         "titulo" to item.titulo,
                         "tipo" to item.tipo
                     )
-                db.child(item.itemId?:"no generado").setValue(item)
+                db.child(item.itemId?:"no generado").setValue(newItem)
             }
         return item
     }

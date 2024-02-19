@@ -2,7 +2,10 @@ package com.starlabs.restoapp.helpers
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import com.starlabs.restoapp.R
+
+fun Activity.getPref() = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
 
 fun Activity.showAlert(){
     val builder = AlertDialog.Builder(this)
@@ -11,4 +14,9 @@ fun Activity.showAlert(){
     builder.setPositiveButton(getString(R.string.ok), null)
     val dialog = builder.create()
     dialog.show()
+}
+
+fun Activity.isAdmin(): Boolean {
+    val prefs = getPref()
+    return prefs.getString("rol", null) == "admin"
 }

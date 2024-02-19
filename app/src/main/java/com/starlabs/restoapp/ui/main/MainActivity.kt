@@ -3,6 +3,7 @@ package com.starlabs.restoapp.ui.main
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -45,11 +46,14 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        val appBarConfiguration =
-            when (viewModel.getRol()) {
-                "admin" -> { AppBarConfiguration(setOf(R.id.navigation_home, R.id.navigation_admin)) }
-                else -> { AppBarConfiguration(setOf(R.id.navigation_home, R.id.navigation_profile)) }
-            }
+        val rol = viewModel.getRol()
+        when (rol) {
+            "admin" -> { navView.menu.findItem(R.id.navigation_profile).isVisible = false }
+            "user" -> { navView.menu.findItem(R.id.navigation_admin).isVisible = false }
+            else -> { }
+        }
+
+        val appBarConfiguration = AppBarConfiguration(setOf(R.id.navigation_home, R.id.navigation_profile, R.id.navigation_admin))
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)

@@ -3,7 +3,6 @@ package com.starlabs.restoapp.model
 import com.google.firebase.auth.FirebaseUser
 
 data class User(
-    var userId: String?=null,
     var email: String?=null,
     var name: String?=null,
     var rol: String?=null,
@@ -15,16 +14,13 @@ data class User(
 ) {
 
     fun convert(user: FirebaseUser): User{
-        this.userId = user.uid
         this.email = user.email.toString()
         this.name = user.displayName.toString()
-        this.rol = "user"
         this.photo = user.photoUrl.toString()
         return this
     }
 
-    fun createUser(userData: Map<String, Any>): User{
-        this.userId = userData["userId"].toString()
+    fun mapUser(userData: Map<String, Any>): User{
         this.email = userData["email"].toString()
         this.name = userData["name"].toString()
         this.rol = userData["rol"].toString()
@@ -43,7 +39,6 @@ data class User(
             "onPlace" to user.onPlace
         ).toMap()
     fun updateUser(updatedUser: User): User {
-        this.userId = updatedUser.userId
         this.email = updatedUser.email
         this.name = updatedUser.name
         this.rol = updatedUser.rol

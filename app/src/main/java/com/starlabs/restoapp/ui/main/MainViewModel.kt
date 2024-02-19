@@ -8,7 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(val loginUC: LoginUC): ViewModel()  {
+class MainViewModel @Inject constructor(private val loginUC: LoginUC): ViewModel()  {
 
 
     lateinit var prefs: Prefs
@@ -17,7 +17,10 @@ class MainViewModel @Inject constructor(val loginUC: LoginUC): ViewModel()  {
         prefs = Prefs(context)
     }
 
-    fun getRol() = prefs.getString("rol")
+    fun getRol(): String?{
+        val rol = prefs.getString("rol")
+        return rol
+    }
     fun signOut(context: Context) {
         Prefs(context).clear()
         loginUC.signOut()

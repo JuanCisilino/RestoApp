@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.GoogleAuthProvider
 import com.starlabs.restoapp.helpers.LoadState
 import com.starlabs.restoapp.helpers.Prefs
 import com.starlabs.restoapp.model.ErrorResponse
@@ -22,7 +21,6 @@ class LoginViewModel @Inject constructor(private val loginUC: LoginUC): ViewMode
 
     val userLiveData = MutableLiveData<User?>()
     var loadStateLiveData = MutableLiveData<LoadState>()
-    var currentUser: User? = loginUC.getCurrentUser()
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
@@ -32,25 +30,18 @@ class LoginViewModel @Inject constructor(private val loginUC: LoginUC): ViewMode
         prefs = Prefs(context)
     }
 
-    fun isOpenSession(): Boolean {
+    fun isOpenSession() {
         val email = prefs.getString("email")
-        return if (!email.isNullOrEmpty()){
-            getUser(email)
-            true
-        } else {
-            false
-        }
+        email?.let { getUser(it) }
     }
 
-    private fun createUser(user: User){
+    private fun createUser(newuser: User){
         uiScope.launch {
             loadStateLiveData.postValue(LoadState.Loading)
             try {
-                val user = loginUC.createUser(user)
+                val user = loginUC.createUser(newuser)
                 user?.let {
-                    prefs.save("email", it.email?:"")
-                    prefs.save("rol", it.rol?:"user")
-
+                    saveUserPrefs(user)
                     loadStateLiveData.postValue(LoadState.Success)
                     userLiveData.postValue(it)
                 }
@@ -63,12 +54,17 @@ class LoginViewModel @Inject constructor(private val loginUC: LoginUC): ViewMode
                     }
 
             } catch (e: Exception) {
-                user.error = ErrorResponse(true, e.message)
+                newuser.error = ErrorResponse(true, e.message)
 
                 loadStateLiveData.postValue(LoadState.Error)
-                userLiveData.postValue(user)
+                userLiveData.postValue(newuser)
             }
         }
+    }
+
+    private fun saveUserPrefs(user: User){
+        prefs.save("email", user.email?:"")
+        prefs.save("rol", user.rol?:"user")
     }
 
     fun singInWithCredentials(credential: AuthCredential){
@@ -77,11 +73,11 @@ class LoginViewModel @Inject constructor(private val loginUC: LoginUC): ViewMode
                 loginUC.signInWithCredentials(credential).addOnCompleteListener {
                         if (it.isSuccessful){
                             val user = User().convert(it.result.user!!)
-                            currentUser = user
-                            if (user.email.isNullOrEmpty()){
+                            if (user.rol.isNullOrEmpty()){
                                 createUser(user)
+                            } else {
+                                getUser(user.email!!)
                             }
-                            userLiveData.postValue(user)
                         }else {
                             userLiveData.postValue(null)
                         }
@@ -92,19 +88,27 @@ class LoginViewModel @Inject constructor(private val loginUC: LoginUC): ViewMode
         }
     }
 
-    fun getCurrentUser(){
-        currentUser = loginUC.getCurrentUser()
-    }
+    fun getCurrentUser() = loginUC.getCurrentUser()
+
     fun getUser(email: String) {
         uiScope.launch {
             loadStateLiveData.postValue(LoadState.Loading)
             try {
-                val user = loginUC.getUser(email)
-                user?.let {
-                    prefs.save("rol", it.rol?:"user")
-                    loadStateLiveData.postValue(LoadState.Success)
+                loginUC.newGetUser(email).addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        val user = it.result.toObject(User::class.java)
+                        user
+                            ?.let {
+                                saveUserPrefs(user)
+                                loginUC.setCurrentUser(user)
+                                loadStateLiveData.postValue(LoadState.Success)
+                            }
+                            ?:run { loadStateLiveData.postValue(LoadState.Error) }
+
+                    } else {
+                        loadStateLiveData.postValue(LoadState.Error)
+                    }
                 }
-                    ?:run { loadStateLiveData.postValue(LoadState.Error) }
             } catch (e: Exception) {
                 loadStateLiveData.postValue(LoadState.Error)
             }
